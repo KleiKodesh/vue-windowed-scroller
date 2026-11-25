@@ -6,7 +6,7 @@ on:
     types: [published]
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.59 has no browsers for 26.04
     permissions:
       contents: read
       id-token: write
