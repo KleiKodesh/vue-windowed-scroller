@@ -30,7 +30,7 @@ boxes at estimated offsets. So:
 npm install vue-windowed-scroller
 ```
 
-Peer dependencies: `vue` ^3.5 and `@vueuse/core` >=10.
+Peer dependencies: `vue` ^3.5 and `@vueuse/core` 10 to 13.
 
 ```ts
 import 'vue-windowed-scroller/style.css'

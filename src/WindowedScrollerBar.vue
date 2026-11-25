@@ -61,7 +61,7 @@ const REPEAT_INTERVAL_MS = 50
 /** The least track a landmark's section gets — enough to put the pointer on. */
 const MIN_LANDMARK_SPAN_PX = 14
 /**
- * The default repeat of the app's `onBarHover` while the pointer stays on the bar:
+ * The default repeat of `onBarHover` while the pointer stays on the bar:
  * `mousemove` stops the moment the pointer rests, so an app that reveals hidden
  * scrollbars for a moment per call is re-armed on this interval, as a native bar's
  * hover keeps it shown.
