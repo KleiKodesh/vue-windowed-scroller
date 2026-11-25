@@ -741,7 +741,7 @@ defineExpose({
         <template v-for="group in renderedGroups" :key="group.key">
           <div
             v-if="group.kind === 'block'"
-            :ref="(element) => setRowElement(group.index, element)"
+            :ref="(element: Element | ComponentPublicInstance | null) => setRowElement(group.index, element)"
             :data-index="group.index"
             class="windowed-scroller-row"
             :class="{ 'pinned-out-of-window': group.pinned }"
@@ -756,7 +756,7 @@ defineExpose({
             <!-- The space after each span is the word gap between one row's text and the next. -->
             <template v-for="index in group.indexes" :key="index">
               <span
-                :ref="(element) => setRowElement(index, element)"
+                :ref="(element: Element | ComponentPublicInstance | null) => setRowElement(index, element)"
                 :data-index="index"
                 class="windowed-scroller-row"
               >

@@ -1,5 +1,5 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "compilerOptions": { "types": ["vite/client"], "noUncheckedIndexedAccess": true },
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": ["vite/client"] },
   "include": ["src/**/*", "test/**/*", "e2e/**/*.ts", "env.d.ts"]
 }
