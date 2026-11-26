@@ -496,8 +496,9 @@ useElementResizeObserver(viewportElement, () => fill())
 // or once it is known that it never will, and then the window is built at the last
 // row there is. The caller never waits "until the row is loaded" before creating
 // the scroller, and never moves it there afterwards.
-const startIndex = props.initialIndex ?? 0
-const startOffsetPx = props.initialOffsetPx ?? 0
+// `restart` sets these again for a new list (same scroller, new start row).
+let startIndex = props.initialIndex ?? 0
+let startOffsetPx = props.initialOffsetPx ?? 0
 /** The row source has answered for the start row. Row 0 needs no asking: any rows at all will do. */
 let isStartRowAnswered = startIndex === 0
 let isFirstWindowBuilt = false
@@ -598,7 +599,7 @@ function readFirstVisible(topInsetPx = 0, fully = false): WindowedScrollerVisibl
  * rows (a tree node expanded or collapsed). Call synchronously before the new count is
  * rendered: the window, its anchor and the mounted row elements move with their rows,
  * so the reader's row stays pixel-still. Any other change of the list is a new list:
- * re-key the scroller.
+ * call `restart`.
  */
 function replaceRows(at: number, removed: number, inserted: number) {
   replaceWindowRows(at, removed, inserted)
@@ -637,6 +638,37 @@ async function landOn(index: number, options: WindowedScrollerScrollToOptions, b
   }
   const landed = await runLanding(() => landAt(index, options), byReader)
   bar.syncFromViewport()
+  return landed
+}
+
+/**
+ * The list is now a NEW list: open it at `index` exactly as a newly created scroller
+ * would (its start row is again the argument), but in this same scroller. The rows
+ * the reader sees stay on screen until the new window is built: the row source is
+ * asked for the start rows first, then the window is set in one render, and the row
+ * elements already mounted are patched with the new rows' content rather than recreated.
+ *
+ * Call it in the same tick as the change of the caller's rows (and `count`). Until the
+ * window is rebuilt, the mounted rows render the new rows at their indexes - so a source
+ * that answers `ensureRows` at once (content fetched before the swap) shows no gap at all.
+ * Emits `opened` once the new list is in place. Resolves as scrollToIndex does.
+ */
+async function restart(index = 0, offsetPx = 0): Promise<boolean> {
+  cancelLanding()
+  reopensAtTop = false
+  endOpeningIndicator()
+  if (props.count <= 0) {
+    // Nothing to open yet: the count watcher builds the first window when rows come.
+    isFirstWindowBuilt = false
+    isStartRowAnswered = true
+    startIndex = index
+    startOffsetPx = offsetPx
+    return false
+  }
+  isFirstWindowBuilt = true
+  const landed = await runLanding(() => landAt(index, { offsetPx, fresh: true }))
+  bar.syncFromViewport()
+  if (landed) emit('opened')
   return landed
 }
 
@@ -710,6 +742,7 @@ defineExpose({
   scrollbarElement: computed(() => barReference.value?.barElement ?? null),
   renderedRange,
   scrollToIndex,
+  restart,
   replaceRows,
   revealIndex,
   nudge,

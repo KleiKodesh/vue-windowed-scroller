@@ -69,6 +69,8 @@ export interface WindowedScrollerWindowOptions {
 export interface WindowedScrollerLandingOptions {
   offsetPx?: number
   align?: 'start' | 'end'
+  /** The list is a new one (restart): the mounted window belongs to the old list and is rebuilt even around a row it holds. */
+  fresh?: boolean
 }
 
 export function useWindowedScrollerWindow(options: WindowedScrollerWindowOptions) {
@@ -393,7 +395,7 @@ export function useWindowedScrollerWindow(options: WindowedScrollerWindowOptions
     const target = Math.max(0, Math.min(index, count - 1))
     const generation = ++landingGeneration
     const wantEnd = Math.min(count, target + ROWS_BELOW_ON_REBUILD)
-    if (!isRowInWindow(target) || !options.rowElement(target)) {
+    if (landing.fresh || !isRowInWindow(target) || !options.rowElement(target)) {
       const start = blockStartOf(Math.max(0, target - ROWS_ABOVE_ON_REBUILD))
       // Fetching the rows can shrink the count (a list whose length was an estimate
       // until its rows were read): a target now past the end lands on the new last

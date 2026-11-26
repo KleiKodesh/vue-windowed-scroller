@@ -86,6 +86,12 @@ export interface WindowedScrollerApi {
    * was superseded by a newer one (or its rows could not be had) - no counters needed.
    */
   scrollToIndex(index: number, options?: WindowedScrollerScrollToOptions): Promise<boolean>
+  /**
+   * The list is a new list: opens it at `index` like a newly created scroller, in this
+   * same scroller - the mounted rows stay until the new window is built in one render,
+   * and are patched, not recreated. Call in the tick the rows change. Emits `opened`.
+   */
+  restart(index?: number, offsetPx?: number): Promise<boolean>
   /** One contiguous change of the list (rows inserted/removed mid-list), before it renders - see WindowedScroller. */
   replaceRows(at: number, removed: number, inserted: number): void
   /** Moves the view by `px` as part of a landing (a follow-up nudge): held by isLanding, ends as moveend('landing'). */
