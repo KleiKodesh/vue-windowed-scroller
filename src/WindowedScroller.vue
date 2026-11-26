@@ -57,7 +57,7 @@
  */
 import { useScrollerHostWindow, useScrollerOptions } from './config'
 import { computed, nextTick, onBeforeUnmount, onBeforeUpdate, onUpdated, ref, watch, type ComponentPublicInstance } from 'vue'
-import { useResizeObserver } from '@vueuse/core'
+import { useElementResizeObserver } from './useElementResizeObserver'
 import WindowedScrollerBar from './WindowedScrollerBar.vue'
 import { useWindowedScrollerWindow } from './useWindowedScrollerWindow'
 import { useWindowedScrollerBarMapping } from './useWindowedScrollerBarMapping'
@@ -465,12 +465,12 @@ function isLanding(): boolean {
 
 // Layout changes that are not this component's own patch: a width change re-wrapping
 // every row, a font arriving. Held against the last remembered anchor.
-useResizeObserver(contentElement, () => {
+useElementResizeObserver(contentElement, () => {
   holdAnchor()
   fill()
   bar.syncFromViewport()
-}, { window: hostWindow })
-useResizeObserver(viewportElement, () => fill(), { window: hostWindow })
+})
+useElementResizeObserver(viewportElement, () => fill())
 
 // ── The first window ───────────────────────────────────────────────────────────
 //

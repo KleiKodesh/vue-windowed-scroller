@@ -19,7 +19,8 @@
  */
 import { useScrollerHostWindow, useScrollerOptions } from './config'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useElementSize, useEventListener, useIntervalFn } from '@vueuse/core'
+import { useEventListener, useIntervalFn } from '@vueuse/core'
+import { useElementHeight } from './useElementResizeObserver'
 import { buildTrackMap, positionForTrackOffset, trackOffsetForPosition, type TrackMap } from './windowedScrollerTrackMap'
 import type { WindowedScrollerBarState } from './windowedScrollerTypes'
 
@@ -96,10 +97,10 @@ onMounted(() => { barWidth.value = nativeScrollbarWidth(!!props.thin) })
 const barElement = ref<HTMLElement | null>(null)
 /** The part between the arrows that the thumb travels in. */
 const trackElement = ref<HTMLElement | null>(null)
-const { height: trackHeight } = useElementSize(trackElement, undefined, { window: hostWindow })
+const trackHeight = useElementHeight(trackElement)
 // Observed, not read once: a pane resize changes it, and everything below —
 // scrollable, the thumb's length, the drag mapping — must follow.
-const { height: observedViewportHeight } = useElementSize(() => props.viewport, undefined, { window: hostWindow })
+const observedViewportHeight = useElementHeight(() => props.viewport)
 const viewportHeight = computed(() => observedViewportHeight.value || trackHeight.value)
 const isScrollable = computed(() => totalHeight.value > viewportHeight.value + 1)
 const maxPosition = computed(() => Math.max(1, totalHeight.value - viewportHeight.value))
